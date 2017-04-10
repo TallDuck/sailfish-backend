@@ -1,0 +1,7 @@
+router:
+  build: ./router
+  container_name: sailfish-router
+  volumes:
+    - ./router:/go/src/sailfish-backend/router
+  ports:
+    - "3000:3000"
