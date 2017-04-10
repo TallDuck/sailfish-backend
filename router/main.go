@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/pressly/chi"
@@ -21,7 +22,8 @@ func main() {
 	r.Group(unauthenticatedRoutes)
 	r.Group(authenticatedRoutes)
 
-	http.ListenAndServe(":3001", r)
+	port := utils.GetEnv("PORT", "3001")
+	http.ListenAndServe(fmt.Sprintf(":%v", port), r)
 }
 
 func unauthenticatedRoutes(r chi.Router) {
