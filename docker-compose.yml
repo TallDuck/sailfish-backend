@@ -10,3 +10,12 @@ services:
       - ./router:/go/src/github.com/tallduck/sailfish-backend/router
     ports:
       - "3000:3000"
+  auth:
+    build:
+      context: ./
+      dockerfile: ./auth/Dockerfile
+    container_name: sailfish-auth
+    volumes:
+      - ./auth:/go/src/github.com/tallduck/sailfish-backend/auth
+    ports:
+      - "8080:8080"

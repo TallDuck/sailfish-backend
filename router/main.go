@@ -22,7 +22,7 @@ func main() {
 	r.Group(unauthenticatedRoutes)
 	r.Group(authenticatedRoutes)
 
-	port := utils.GetEnv("PORT", "3001")
+	port := utils.GetEnv("APP_PORT", "3000")
 	http.ListenAndServe(fmt.Sprintf(":%v", port), r)
 }
 

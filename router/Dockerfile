@@ -1,4 +1,4 @@
-# Development docker image, leverages gin for automatic compilation
+# Development docker image, leverages CompileDaemon for automatic compilation
 FROM golang:1.8-alpine
 MAINTAINER <mike@tallduck.com> Mike George
 
@@ -6,7 +6,7 @@ MAINTAINER <mike@tallduck.com> Mike George
 # Once copied into a new service the PROJECT var must be updated
 # to match the folder (package) name.
 ENV PROJECT router
-ENV PORT 8080
+ENV APP_PORT 3000
 ENV CODE_DIR /go/src/github.com/tallduck/sailfish-backend
 ENV PROJECT_DIR ${CODE_DIR}/${PROJECT}
 
@@ -19,13 +19,16 @@ COPY ./${PROJECT} ${PROJECT_DIR}
 # gets copied in so it doesn't have to be downloaded
 COPY ./protobuf ${CODE_DIR}/protobuf
 
-# Git is needed in order to fetch gin
+# Copy the vendor directory containing dependencies for all services
+COPY ./vendor ${CODE_DIR}/vendor
+
+# Git is needed in order to fetch CompileDaemon
 RUN apk add --update git
 
-# Gin is used for auto compilation, the service will be
+# CompileDaemon is used for auto compilation, the service will be
 # recompiled on code change so long as the volume is mounted.
-RUN go get github.com/codegangsta/gin
+RUN go get github.com/githubnemo/CompileDaemon
 
-EXPOSE 3000
+EXPOSE ${APP_PORT}
 
-CMD gin run
+CMD CompileDaemon -command="./${PROJECT}"

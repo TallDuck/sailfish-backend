@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/grpclog"
+
 	"github.com/tallduck/sailfish-backend/protobuf/auth"
 )
 
@@ -22,16 +26,28 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		header = strings.Replace(header, "Token ", "", 1)
 		fmt.Println(header)
 
-		reqBuffer := auth.Request{
+		reqBuffer := &auth.Request{
 			Token: header,
 		}
 
 		fmt.Println(reqBuffer)
 
-		// Call auth microservice to validate token
-		auth := false
+		conn, err := grpc.Dial("auth:8080", grpc.WithInsecure())
+		if err != nil {
+			grpclog.Fatalf("failed to dial: %v", err)
+			ErrorHTTP(w)
+			return
+		}
 
-		if !auth {
+		client := auth.NewAuthClient(conn)
+		// Call auth microservice to validate token
+		auth, err := client.Authenticate(context.Background(), reqBuffer)
+		if err != nil {
+			ErrorHTTP(w)
+			return
+		}
+
+		if !auth.Status {
 			UnauthorizedHTTP(w)
 			return
 		}
