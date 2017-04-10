@@ -15,8 +15,6 @@ COPY ./protobuf ${CODE_DIR}/protobuf
 RUN apk add --update git
 
 RUN go get github.com/codegangsta/gin
-RUN go-wrapper download
-RUN go-wrapper install
 
 EXPOSE 3000
 
