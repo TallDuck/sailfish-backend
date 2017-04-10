@@ -21,7 +21,7 @@ func main() {
 	r.Group(unauthenticatedRoutes)
 	r.Group(authenticatedRoutes)
 
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":3001", r)
 }
 
 func unauthenticatedRoutes(r chi.Router) {

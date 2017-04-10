@@ -2,20 +2,21 @@
 FROM golang:1.8-alpine
 MAINTAINER <mike@tallduck.com> Mike George
 
-ENV CODE_DIR /go/src/github.com/tallduck/sailfish-backend/router
+ENV CODE_DIR /go/src/github.com/tallduck/sailfish-backend
+ENV PROJECT router
+ENV PROJECT_DIR ${CODE_DIR}/${PROJECT}
 
-RUN mkdir -p ${CODE_DIR}
-WORKDIR ${CODE_DIR}
+RUN mkdir -p ${CODE_DIR}{protobuf, ${PROJECT}}
+WORKDIR ${PROJECT_DIR}
 
-COPY . ${CODE_DIR}
+COPY ./router ${PROJECT_DIR}
+COPY ./protobuf ${CODE_DIR}/protobuf
 
 RUN apk add --update git
 
 RUN go get github.com/codegangsta/gin
 RUN go-wrapper download
 RUN go-wrapper install
-
-ENV PORT 8080
 
 EXPOSE 3000
 

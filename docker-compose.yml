@@ -1,7 +1,12 @@
-router:
-  build: ./router
-  container_name: sailfish-router
-  volumes:
-    - ./router:/go/src/sailfish-backend/router
-  ports:
-    - "3000:3000"
+version: '3'
+
+services:
+  router:
+    build:
+      context: ./
+      dockerfile: ./router/Dockerfile
+    container_name: sailfish-router
+    volumes:
+      - ./router:/go/src/github.com/tallduck/sailfish-backend/router
+    ports:
+      - "3000:3000"
