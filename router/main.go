@@ -12,6 +12,11 @@ import (
 )
 
 func main() {
+	v1 := chi.NewRouter()
+
+	v1.Group(unauthenticatedRoutes)
+	v1.Group(authenticatedRoutes)
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -20,8 +25,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/ping"))
 
-	r.Group(unauthenticatedRoutes)
-	r.Group(authenticatedRoutes)
+	r.Mount("/api/v1", v1)
 
 	port := helpers.GetEnv("APP_PORT", "3000")
 	http.ListenAndServe(fmt.Sprintf(":%v", port), r)
