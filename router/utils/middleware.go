@@ -23,7 +23,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 		}
 
 		header = strings.Replace(header, "Token ", "", 1)
-		reqBuffer := &auth.Request{
+		reqBuffer := &auth.TokenRequest{
 			Token: header,
 		}
 
@@ -34,7 +34,7 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 
 		// Call auth microservice to validate token
 		client := auth.NewAuthClient(conn)
-		auth, err := client.Authenticate(context.Background(), reqBuffer)
+		auth, err := client.Validate(context.Background(), reqBuffer)
 		if err != nil {
 			helpers.ErrorHTTP(w)
 			return

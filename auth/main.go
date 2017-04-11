@@ -15,18 +15,28 @@ import (
 type authServer struct {
 }
 
-func (s *authServer) Authenticate(ctx context.Context, request *auth.Request) (*auth.Response, error) {
+func (s *authServer) Authenticate(ctx context.Context, request *auth.AuthRequest) (*auth.AuthResponse, error) {
 	fmt.Println("Starting authentication request")
 
-	if request.Token == "letmein" {
-		return &auth.Response{Status: true}, nil
+	if len(request.Username) > 0 && len(request.Password) > 0 {
+		return &auth.AuthResponse{Status: true, Token: "needs_implementation"}, nil
 	}
 
-	return &auth.Response{Status: false}, nil
+	return &auth.AuthResponse{Status: false}, nil
 }
 
-func (s *authServer) Invalidate(ctx context.Context, request *auth.Request) (*auth.Response, error) {
-	return &auth.Response{Status: false}, nil
+func (s *authServer) Validate(ctx context.Context, request *auth.TokenRequest) (*auth.TokenResponse, error) {
+	fmt.Println("Starting token validation request")
+
+	if request.Token == "letmein" {
+		return &auth.TokenResponse{Status: true}, nil
+	}
+
+	return &auth.TokenResponse{Status: false}, nil
+}
+
+func (s *authServer) Invalidate(ctx context.Context, request *auth.TokenRequest) (*auth.TokenResponse, error) {
+	return &auth.TokenResponse{Status: false}, nil
 }
 
 func main() {

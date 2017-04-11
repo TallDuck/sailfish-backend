@@ -9,8 +9,10 @@ It is generated from these files:
 	auth.proto
 
 It has these top-level messages:
-	Request
-	Response
+	AuthRequest
+	AuthResponse
+	TokenRequest
+	TokenResponse
 */
 package auth
 
@@ -34,32 +36,80 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type Request struct {
-	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
+type AuthRequest struct {
+	Username string `protobuf:"bytes,1,opt,name=username" json:"username,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password" json:"password,omitempty"`
 }
 
-func (m *Request) Reset()                    { *m = Request{} }
-func (m *Request) String() string            { return proto.CompactTextString(m) }
-func (*Request) ProtoMessage()               {}
-func (*Request) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *AuthRequest) Reset()                    { *m = AuthRequest{} }
+func (m *AuthRequest) String() string            { return proto.CompactTextString(m) }
+func (*AuthRequest) ProtoMessage()               {}
+func (*AuthRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *Request) GetToken() string {
+func (m *AuthRequest) GetUsername() string {
+	if m != nil {
+		return m.Username
+	}
+	return ""
+}
+
+func (m *AuthRequest) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+type AuthResponse struct {
+	Status bool   `protobuf:"varint,1,opt,name=status" json:"status,omitempty"`
+	Token  string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
+}
+
+func (m *AuthResponse) Reset()                    { *m = AuthResponse{} }
+func (m *AuthResponse) String() string            { return proto.CompactTextString(m) }
+func (*AuthResponse) ProtoMessage()               {}
+func (*AuthResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+func (m *AuthResponse) GetStatus() bool {
+	if m != nil {
+		return m.Status
+	}
+	return false
+}
+
+func (m *AuthResponse) GetToken() string {
 	if m != nil {
 		return m.Token
 	}
 	return ""
 }
 
-type Response struct {
+type TokenRequest struct {
+	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
+}
+
+func (m *TokenRequest) Reset()                    { *m = TokenRequest{} }
+func (m *TokenRequest) String() string            { return proto.CompactTextString(m) }
+func (*TokenRequest) ProtoMessage()               {}
+func (*TokenRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *TokenRequest) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type TokenResponse struct {
 	Status bool `protobuf:"varint,1,opt,name=status" json:"status,omitempty"`
 }
 
-func (m *Response) Reset()                    { *m = Response{} }
-func (m *Response) String() string            { return proto.CompactTextString(m) }
-func (*Response) ProtoMessage()               {}
-func (*Response) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *TokenResponse) Reset()                    { *m = TokenResponse{} }
+func (m *TokenResponse) String() string            { return proto.CompactTextString(m) }
+func (*TokenResponse) ProtoMessage()               {}
+func (*TokenResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
-func (m *Response) GetStatus() bool {
+func (m *TokenResponse) GetStatus() bool {
 	if m != nil {
 		return m.Status
 	}
@@ -67,8 +117,10 @@ func (m *Response) GetStatus() bool {
 }
 
 func init() {
-	proto.RegisterType((*Request)(nil), "auth.Request")
-	proto.RegisterType((*Response)(nil), "auth.Response")
+	proto.RegisterType((*AuthRequest)(nil), "auth.AuthRequest")
+	proto.RegisterType((*AuthResponse)(nil), "auth.AuthResponse")
+	proto.RegisterType((*TokenRequest)(nil), "auth.TokenRequest")
+	proto.RegisterType((*TokenResponse)(nil), "auth.TokenResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -82,8 +134,9 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Auth service
 
 type AuthClient interface {
-	Authenticate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
-	Invalidate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Validate(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*TokenResponse, error)
+	Invalidate(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*TokenResponse, error)
 }
 
 type authClient struct {
@@ -94,8 +147,8 @@ func NewAuthClient(cc *grpc.ClientConn) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) Authenticate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *authClient) Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+	out := new(AuthResponse)
 	err := grpc.Invoke(ctx, "/auth.Auth/Authenticate", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -103,8 +156,17 @@ func (c *authClient) Authenticate(ctx context.Context, in *Request, opts ...grpc
 	return out, nil
 }
 
-func (c *authClient) Invalidate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *authClient) Validate(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
+	err := grpc.Invoke(ctx, "/auth.Auth/Validate", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) Invalidate(ctx context.Context, in *TokenRequest, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
 	err := grpc.Invoke(ctx, "/auth.Auth/Invalidate", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -115,8 +177,9 @@ func (c *authClient) Invalidate(ctx context.Context, in *Request, opts ...grpc.C
 // Server API for Auth service
 
 type AuthServer interface {
-	Authenticate(context.Context, *Request) (*Response, error)
-	Invalidate(context.Context, *Request) (*Response, error)
+	Authenticate(context.Context, *AuthRequest) (*AuthResponse, error)
+	Validate(context.Context, *TokenRequest) (*TokenResponse, error)
+	Invalidate(context.Context, *TokenRequest) (*TokenResponse, error)
 }
 
 func RegisterAuthServer(s *grpc.Server, srv AuthServer) {
@@ -124,7 +187,7 @@ func RegisterAuthServer(s *grpc.Server, srv AuthServer) {
 }
 
 func _Auth_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(AuthRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -136,13 +199,31 @@ func _Auth_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/auth.Auth/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Authenticate(ctx, req.(*Request))
+		return srv.(AuthServer).Authenticate(ctx, req.(*AuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_Validate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Validate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.Auth/Validate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Validate(ctx, req.(*TokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Auth_Invalidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(TokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -154,7 +235,7 @@ func _Auth_Invalidate_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/auth.Auth/Invalidate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Invalidate(ctx, req.(*Request))
+		return srv.(AuthServer).Invalidate(ctx, req.(*TokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,6 +249,10 @@ var _Auth_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_Authenticate_Handler,
 		},
 		{
+			MethodName: "Validate",
+			Handler:    _Auth_Validate_Handler,
+		},
+		{
 			MethodName: "Invalidate",
 			Handler:    _Auth_Invalidate_Handler,
 		},
@@ -179,15 +264,19 @@ var _Auth_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("auth.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 149 bytes of a gzipped FileDescriptorProto
+	// 221 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x4a, 0x2c, 0x2d, 0xc9,
-	0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x01, 0xb1, 0x95, 0xe4, 0xb9, 0xd8, 0x83, 0x52,
-	0x0b, 0x4b, 0x53, 0x8b, 0x4b, 0x84, 0x44, 0xb8, 0x58, 0x4b, 0xf2, 0xb3, 0x53, 0xf3, 0x24, 0x18,
-	0x15, 0x18, 0x35, 0x38, 0x83, 0x20, 0x1c, 0x25, 0x25, 0x2e, 0x8e, 0xa0, 0xd4, 0xe2, 0x82, 0xfc,
-	0xbc, 0xe2, 0x54, 0x21, 0x31, 0x2e, 0xb6, 0xe2, 0x92, 0xc4, 0x92, 0xd2, 0x62, 0xb0, 0x12, 0x8e,
-	0x20, 0x28, 0xcf, 0x28, 0x89, 0x8b, 0xc5, 0xb1, 0xb4, 0x24, 0x43, 0x48, 0x97, 0x8b, 0x07, 0x44,
-	0xa7, 0xe6, 0x95, 0x64, 0x26, 0x27, 0x96, 0xa4, 0x0a, 0xf1, 0xea, 0x81, 0xed, 0x83, 0x5a, 0x20,
-	0xc5, 0x07, 0xe3, 0x42, 0x8d, 0xd3, 0xe6, 0xe2, 0xf2, 0xcc, 0x2b, 0x4b, 0xcc, 0xc9, 0x4c, 0x21,
-	0xac, 0x38, 0x89, 0x0d, 0xec, 0x6a, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x9d, 0x5b, 0x01,
-	0x7f, 0xc3, 0x00, 0x00, 0x00,
+	0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x01, 0xb1, 0x95, 0x5c, 0xb9, 0xb8, 0x1d, 0x4b,
+	0x4b, 0x32, 0x82, 0x52, 0x0b, 0x4b, 0x53, 0x8b, 0x4b, 0x84, 0xa4, 0xb8, 0x38, 0x4a, 0x8b, 0x53,
+	0x8b, 0xf2, 0x12, 0x73, 0x53, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xe0, 0x7c, 0x90, 0x5c,
+	0x41, 0x62, 0x71, 0x71, 0x79, 0x7e, 0x51, 0x8a, 0x04, 0x13, 0x44, 0x0e, 0xc6, 0x57, 0xb2, 0xe1,
+	0xe2, 0x81, 0x18, 0x53, 0x5c, 0x90, 0x9f, 0x57, 0x9c, 0x2a, 0x24, 0xc6, 0xc5, 0x56, 0x5c, 0x92,
+	0x58, 0x52, 0x5a, 0x0c, 0x36, 0x85, 0x23, 0x08, 0xca, 0x13, 0x12, 0xe1, 0x62, 0x2d, 0xc9, 0xcf,
+	0x4e, 0xcd, 0x83, 0x1a, 0x00, 0xe1, 0x28, 0xa9, 0x70, 0xf1, 0x84, 0x80, 0x18, 0x30, 0x57, 0xc0,
+	0x55, 0x31, 0x22, 0xab, 0x52, 0xe7, 0xe2, 0x85, 0xaa, 0xc2, 0x6f, 0x89, 0xd1, 0x4a, 0x46, 0x2e,
+	0x16, 0x90, 0x6b, 0x84, 0x4c, 0x21, 0xae, 0x4a, 0xcd, 0x2b, 0xc9, 0x4c, 0x4e, 0x2c, 0x49, 0x15,
+	0x12, 0xd4, 0x03, 0xfb, 0x1f, 0xc9, 0xc3, 0x52, 0x42, 0xc8, 0x42, 0x50, 0x73, 0x8d, 0xb9, 0x38,
+	0xc2, 0x12, 0x73, 0x32, 0x53, 0x40, 0x5a, 0xa0, 0xf2, 0xc8, 0xce, 0x93, 0x12, 0x46, 0x11, 0x83,
+	0x6a, 0x32, 0xe5, 0xe2, 0xf2, 0xcc, 0x2b, 0x23, 0x55, 0x5b, 0x12, 0x1b, 0x38, 0x32, 0x8c, 0x01,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0xd9, 0x39, 0x08, 0xb8, 0x9a, 0x01, 0x00, 0x00,
 }
