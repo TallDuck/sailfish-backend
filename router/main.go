@@ -7,6 +7,7 @@ import (
 	"github.com/pressly/chi"
 	"github.com/pressly/chi/middleware"
 
+	"github.com/tallduck/sailfish-backend/helpers"
 	"github.com/tallduck/sailfish-backend/router/utils"
 )
 
@@ -22,7 +23,7 @@ func main() {
 	r.Group(unauthenticatedRoutes)
 	r.Group(authenticatedRoutes)
 
-	port := utils.GetEnv("APP_PORT", "3000")
+	port := helpers.GetEnv("APP_PORT", "3000")
 	http.ListenAndServe(fmt.Sprintf(":%v", port), r)
 }
 

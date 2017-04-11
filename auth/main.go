@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 
-	"github.com/tallduck/sailfish-backend/auth/utils"
+	"github.com/tallduck/sailfish-backend/helpers"
 	"github.com/tallduck/sailfish-backend/protobuf/auth"
 )
 
@@ -30,7 +30,7 @@ func (s *authServer) Invalidate(ctx context.Context, request *auth.Request) (*au
 }
 
 func main() {
-	port := utils.GetEnv("APP_PORT", "8080")
+	port := helpers.GetEnv("APP_PORT", "8080")
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
 	if err != nil {
 		grpclog.Fatalf("failed to listen: %v", err)
