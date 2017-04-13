@@ -17,5 +17,3 @@ services:
     container_name: sailfish-auth
     volumes:
       - ./auth:/go/src/github.com/tallduck/sailfish-backend/auth
-    ports:
-      - "8080:8080"
