@@ -11,6 +11,8 @@ import (
 	"github.com/tallduck/sailfish-backend/router/utils"
 )
 
+var appRouter = Router{}
+
 func main() {
 	v1 := chi.NewRouter()
 
@@ -32,19 +34,14 @@ func main() {
 }
 
 func unauthenticatedRoutes(r chi.Router) {
+	appRouter.PublicHandlers(r)
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("v1"))
-	})
-
-	r.Get("/auth/login", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("login here"))
 	})
 }
 
 func authenticatedRoutes(r chi.Router) {
 	r.Use(utils.AuthenticationMiddleware)
-
-	r.Get("/auth/logout", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("logout here"))
-	})
+	appRouter.PrivateHandlers(r)
 }
