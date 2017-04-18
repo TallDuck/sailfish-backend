@@ -1,5 +1,9 @@
 # Sailfish Backend
 
+
+[![Codeship Status for tallduck/sailfish-backend](https://img.shields.io/codeship/f0dc8440-0607-0135-edfd-52b395dcacd9/master.svg)](https://app.codeship.com/projects/213698)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tallduck/sailfish-backend)](https://goreportcard.com/report/github.com/tallduck/sailfish-backend)
+
 Current Status: WIP (pre-alpha)
 
 ## Architecture
