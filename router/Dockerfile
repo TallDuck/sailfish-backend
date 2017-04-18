@@ -1,4 +1,4 @@
-# Development docker image, leverages CompileDaemon for automatic compilation
+# Development docker image, leverages reflex for automatic compilation
 FROM golang:1.8-alpine
 MAINTAINER <mike@tallduck.com> Mike George
 
@@ -23,13 +23,16 @@ COPY ./helpers ${CODE_DIR}/helpers
 # Copy the vendor directory containing dependencies for all services
 COPY ./vendor ${CODE_DIR}/vendor
 
-# Git is needed in order to fetch CompileDaemon
+# Git is needed in order to fetch reflex
 RUN apk add --update git
 
-# CompileDaemon is used for auto compilation, the service will be
+# reflex is used for auto compilation, the service will be
 # recompiled on code change so long as the volume is mounted.
-RUN go get github.com/githubnemo/CompileDaemon
+RUN go get github.com/cespare/reflex
 
 EXPOSE ${APP_PORT}
 
-CMD CompileDaemon -command="./${PROJECT}"
+CMD cd ../ && \
+    reflex -r '(^|/)(helpers|protobuf|vendor|${PROJECT})/' \ 
+           -r '\.go$' \
+           -s -- sh -c 'go build -o ${PROJECT}/${PROJECT} ./${PROJECT}/ && ./${PROJECT}/${PROJECT}'

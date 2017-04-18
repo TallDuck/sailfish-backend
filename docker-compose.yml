@@ -8,6 +8,9 @@ services:
     container_name: sailfish-router
     volumes:
       - ./router:/go/src/github.com/tallduck/sailfish-backend/router
+      - ./vendor:/go/src/github.com/tallduck/sailfish-backend/vendor
+      - ./helpers:/go/src/github.com/tallduck/sailfish-backend/helpers
+      - ./protobuf:/go/src/github.com/tallduck/sailfish-backend/protobuf
     ports:
       - "3000:3000"
   auth:
@@ -17,3 +20,6 @@ services:
     container_name: sailfish-auth
     volumes:
       - ./auth:/go/src/github.com/tallduck/sailfish-backend/auth
+      - ./vendor:/go/src/github.com/tallduck/sailfish-backend/vendor
+      - ./helpers:/go/src/github.com/tallduck/sailfish-backend/helpers
+      - ./protobuf:/go/src/github.com/tallduck/sailfish-backend/protobuf
